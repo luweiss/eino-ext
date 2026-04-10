@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/cloudwego/eino/schema"
-	ollamaapi "github.com/eino-contrib/ollama/api"
+	ollamaapi "github.com/ollama/ollama/api"
 
 	"github.com/cloudwego/eino-ext/components/model/ollama"
 )

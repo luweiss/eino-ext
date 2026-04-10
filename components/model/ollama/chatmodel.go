@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eino-contrib/ollama/api"
+	"github.com/ollama/ollama/api"
 
 	"github.com/cloudwego/eino/callbacks"
 	"github.com/cloudwego/eino/components"
@@ -352,10 +352,15 @@ func toOllamaMessage(einoMsg *schema.Message) (api.Message, error) {
 			return api.Message{}, fmt.Errorf("error parsing JSON to object: %w", err)
 		}
 
+		tcArgs := api.NewToolCallFunctionArguments()
+		for k, v := range args {
+			tcArgs.Set(k, v)
+		}
+
 		toolCalls = append(toolCalls, api.ToolCall{
 			Function: api.ToolCallFunction{
 				Name:      toolCall.Function.Name,
-				Arguments: args,
+				Arguments: tcArgs,
 			},
 		})
 	}
@@ -461,6 +466,7 @@ func toEinoMessage(resp api.ChatResponse) *schema.Message {
 	for _, toolCall := range resp.Message.ToolCalls {
 		arguments := toolCall.Function.Arguments.String()
 		toolCalls = append(toolCalls, schema.ToolCall{
+			ID:   toolCall.ID,
 			Type: "function",
 			Function: schema.FunctionCall{
 				Name:      toolCall.Function.Name,
@@ -522,21 +528,20 @@ func toOllamaTools(einoTools []*schema.ToolInfo) ([]api.Tool, error) {
 			}
 		}
 
+		propsMap := api.NewToolPropertiesMap()
+		for k, v := range properties {
+			propsMap.Set(k, v)
+		}
+
 		ollamaTool := api.Tool{
 			Type: "function", // Assuming default type
 			Function: api.ToolFunction{
 				Name:        einoTool.Name,
 				Description: einoTool.Desc,
-				Parameters: struct {
-					Type       string                      `json:"type"`
-					Defs       any                         `json:"$defs,omitempty"`
-					Items      any                         `json:"items,omitempty"`
-					Required   []string                    `json:"required"`
-					Properties map[string]api.ToolProperty `json:"properties"`
-				}{
+				Parameters: api.ToolFunctionParameters{
 					Type:       "object",
 					Required:   required,
-					Properties: properties,
+					Properties: propsMap,
 				},
 			},
 		}

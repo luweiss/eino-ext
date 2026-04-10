@@ -24,7 +24,7 @@ import (
 	"time"
 
 	. "github.com/bytedance/mockey"
-	"github.com/eino-contrib/ollama/api"
+	"github.com/ollama/ollama/api"
 	"github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 
@@ -58,7 +58,7 @@ func MockChatInvoke(ctx context.Context, req *api.ChatRequest, fn api.ChatRespon
 			{
 				Function: api.ToolCallFunction{
 					Name:      req.Tools[0].Function.Name,
-					Arguments: api.ToolCallFunctionArguments(map[string]any{}),
+					Arguments: api.NewToolCallFunctionArguments(),
 				},
 			},
 		}
