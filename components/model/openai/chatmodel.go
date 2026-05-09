@@ -252,7 +252,7 @@ func (cm *ChatModel) Generate(ctx context.Context, in []*schema.Message, opts ..
 	ctx = callbacks.EnsureRunInfo(ctx, cm.GetType(), components.ComponentOfChatModel)
 	out, err := cm.cli.Generate(ctx, in, opts...)
 	if err != nil {
-		return nil, convOrigAPIError(err)
+		return nil, err
 	}
 	return out, nil
 }
@@ -261,7 +261,7 @@ func (cm *ChatModel) Stream(ctx context.Context, in []*schema.Message, opts ...m
 	ctx = callbacks.EnsureRunInfo(ctx, cm.GetType(), components.ComponentOfChatModel)
 	out, err := cm.cli.Stream(ctx, in, opts...)
 	if err != nil {
-		return nil, convOrigAPIError(err)
+		return nil, err
 	}
 	return out, nil
 }
